@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.proj.place.dao.IPlaceDao">
+
+	<select id="getPlaceCount" resultType="int"
+		parameterType="com.proj.common.vo.PagingVO">
+		SELECT COUNT(*) as cnt
+		FROM place
+	</select>
+
+	<select id="getPlaceList"
+		parameterType="com.proj.common.vo.PagingVO"
+		resultType="com.proj.place.vo.PlaceVO">
+		<include refid="common.PRE_PAGING_QRY" />
+		Select place.*
+		        , (select area_name from area where place.area_code = area_code) as area_nm
+		FROM place
+		ORDER BY no ASC
+		<include refid="common.POST_PAGING_QRY" />
+	</select>
+
+	<select id="getPlace" parameterType="int"
+		resultType="com.proj.place.vo.PlaceVO">
+		SELECT no
+		    , name
+		    , area_code
+		    , add1
+		    , add2
+		    , keyword
+		    , hit
+		    , likes
+		    , grade
+		    , image_url
+		    , public_yn
+		    , table_code
+		    , mapx
+		    , mapy
+		    , tel
+		FROM place
+		WHERE no = #{no}
+	</select>
+	
+	<insert id="InsertPlace"
+		parameterType="com.proj.place.vo.PlaceVO">
+		INSERT INTO place
+		(  	  no
+		    , name
+		    , area_code
+		    , add1
+		    , add2
+		    , keyword
+		    , hit
+		    , likes
+		    , grade
+		    , image_url
+		    , public_yn
+		    , table_code
+		    , mapx
+		    , mapy
+		    , tel
+		) VALUES (
+			PLACE_SEQ.nextval 
+			, #{name}
+		    , #{area_code}
+		    , #{add1}
+		    , #{add2}
+		    , #{keyword}
+		    , 0
+		    , 0
+		    , 0
+		   	, #{image_url}
+		   	, 'N'
+		    , 'pl'
+		    , #{mapx}
+		    , #{mapy}
+		    , #{tel}	)
+	</insert>
+
+	<update id="updatePlace"
+		parameterType="com.proj.place.vo.PlaceVO">
+		UPDATE place
+		SET name = #{name}
+		, add1 = #{add1}
+		, add2 = #{add2}
+		, keyword = #{keyword}
+		, image_url = #{imageUrl}
+		, mapx = #{mapx}
+		, mapy = #{mapy}
+		WHERE no = #{no}
+	</update>
+
+	<update id="deletePlace"
+		parameterType="com.proj.place.vo.PlaceVO">
+		Delete place
+		WHERE no = #{no}
+	</update>
+
+
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.proj.stay.dao.IStayDao">
+
+	<select id="getStayCount" resultType="int"
+		parameterType="com.proj.common.vo.PagingVO">
+		SELECT COUNT(*) as cnt
+		FROM stay
+	</select>
+
+	<select id="getStayList"
+		parameterType="com.proj.common.vo.PagingVO"
+		resultType="com.proj.stay.vo.StayVO">
+		<include refid="common.PRE_PAGING_QRY" />
+		Select stay.*
+		        , (select area_name from area where stay.area_code = area_code) as area_nm
+		FROM stay
+		ORDER BY no ASC
+		<include refid="common.POST_PAGING_QRY" />
+	</select>
+
+	<select id="getStay" parameterType="int"
+		resultType="com.proj.stay.vo.StayVO">
+		SELECT no
+		    , name
+		    , area_code
+		    , add1
+		    , add2
+		    , keyword
+		    , hit
+		    , likes
+		    , grade
+		    , tel
+		    , image_url
+		    , public_yn
+		    , table_code
+		    , mapx
+		    , mapy
+		FROM stay
+		WHERE no = #{no}
+	</select>
+	
+	<insert id="InsertStay"
+		parameterType="com.proj.stay.vo.StayVO">
+		INSERT INTO stay
+		(  	  no
+		    , name
+		    , area_code
+		    , add1
+		    , add2
+		    , keyword
+		    , hit
+		    , likes
+		    , grade
+		    , tel
+		    , image_url
+		    , public_yn
+		    , table_code
+		    , mapx
+		    , mapy
+		) VALUES (
+			STAY_SEQ.nextval 
+			, #{name}
+		    , #{area_code}
+		    , #{add1}
+		    , #{add2}
+		    , #{keyword}
+		    , 0
+		    , 0
+		    , 0
+		    , #{tel}
+		   	, #{image_url}
+		   	, 'N'
+		    , 'st'
+		    , #{mapx}
+		    , #{mapy}
+		    	)
+	</insert>
+
+	<update id="updateStay"
+		parameterType="com.proj.stay.vo.StayVO">
+		UPDATE stay
+		SET name = #{name}
+		, add1 = #{add1}
+		, add2 = #{add2}
+		, tel = #{tel}
+		, keyword = #{keyword}
+		, image_url = #{imageUrl}
+		, mapx = #{mapx}
+		, mapy = #{mapy}
+		WHERE no = #{no}
+	</update>
+
+	<update id="deleteStay"
+		parameterType="com.proj.stay.vo.StayVO">
+		Delete stay
+		WHERE no = #{no}
+	</update>
+
+
+</mapper>

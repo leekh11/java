@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- Spring @MVC 기반으로 기본 설정 -->
+	<mvc:annotation-driven />
+
+
+	<!-- 정적자원(css, img, js, ..) 을 처리하는 방법 2가지 -->
+	<!-- 1. 요청에 대한 매핑이 없다면 WAS에게 넘김 -->
+	<mvc:default-servlet-handler />
+	<!-- 2. 정적자원 요청정보와 실제경로 설정 -->
+	<mvc:resources mapping="/css/**" location="/css/" />
+	<mvc:resources mapping="/bootstrap-3.3.2/**"
+		location="/bootstrap-3.3.2/" />
+
+	<!-- 뷰 결정자 지정 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+	<!-- 해당 패키지 하위의 모든 애노테이션을 등록, 처리 -->
+	<context:component-scan base-package="com.proj" use-default-filters="false" >
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	<!-- 매핑에 대해서 바로 뷰를 설정하고자 하는 경우(컨트롤러가 필요없는 경우) -->
+	<!-- view-name 이 없다면 path 정보가 뷰로 결정된다. -->
+	<mvc:view-controller path= "/upload/form" view-name="uploadForm" />
+<!-- 	<mvc:view-controller path= "/cart/cart" /> -->
+<!-- 	<mvc:view-controller path= "/upload/result" view-name="uploadResult" /> -->
+
+	<!-- 업로드 처리를 위한 빈 등록 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver" />
+	
+	<mvc:interceptors>
+		<!-- 전역적 인터셉터 등록 -->
+		<bean id="loggingInterceptor" class="com.proj.common.interceptor.LoggingInterceptor" />
+		
+		<!-- 매핑별 인터셉터 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/member/**"/>
+			<mvc:mapping path="/reply/**"/>
+			<mvc:mapping path="/cart/**"/>
+			<mvc:exclude-mapping path="/reply/replyList" /> <!-- 매핑 중 제외할 대상 -->
+			<bean class="com.proj.common.interceptor.LoginCheckInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+	
+	
+</beans>
+
+
+

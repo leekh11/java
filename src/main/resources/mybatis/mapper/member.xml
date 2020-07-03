@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.proj.member.dao.IMemberDao">
+
+	<select id="getMemberCount" resultType="int"
+		parameterType="com.proj.member.vo.MemberSearchVO">
+		SELECT COUNT(*) as cnt
+		FROM member
+		WHERE mem_del_yn = 'N'
+		<if
+			test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+			<choose>
+				<when test='searchType == "ID"'>
+					And mem_id like '%' || #{searchWord} || '%'
+				</when>
+				<when test='searchType == "NM"'>
+					And mem_name like '%' || #{searchWord} || '%'
+				</when>
+				<when test='searchType == "SB"'>
+					And mem_sb like '%' || #{searchWord} || '%'
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="getMemberList"
+		parameterType="com.proj.member.vo.MemberSearchVO"
+		resultType="com.proj.member.vo.MemberVO">
+		<include refid="common.PRE_PAGING_QRY" />
+		Select *
+		FROM member
+		WHERE mem_del_yn = 'N'
+		<if
+			test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+			<choose>
+				<when test='searchType == "ID"'>
+					And mem_id like '%' || #{searchWord} || '%'
+				</when>
+				<when test='searchType == "NM"'>
+					And mem_name like '%' || #{searchWord} || '%'
+				</when>
+				<when test='searchType == "SB"'>
+					And mem_sb like '%' || #{searchWord} || '%'
+				</when>
+			</choose>
+		</if>
+		ORDER BY mem_id ASC
+		<include refid="common.POST_PAGING_QRY" />
+	</select>
+	
+	<select id="getMemberListM"
+			parameterType="com.proj.member.vo.MemberSearchVO"
+			resultType="com.proj.member.vo.MemberVO">
+		<include refid="common.PRE_PAGING_QRY" />
+		Select *
+		FROM member
+		WHERE mem_del_yn = 'N'
+		<include refid="common.POST_PAGING_QRY" />
+	</select>
+
+	<select id="getMember" parameterType="String"
+		resultType="com.proj.member.vo.MemberVO">
+		SELECT mem_id
+		, mem_pass
+		, mem_name
+		, mem_sb
+		, mem_bir
+		, mem_tel
+		, mem_email
+		, mem_mileage
+		, mem_del_yn
+		FROM member
+		WHERE mem_id = #{memId}
+		And mem_del_yn = 'N'
+	</select>
+	
+	<insert id="InsertMember"
+		parameterType="com.proj.member.vo.MemberVO">
+		INSERT INTO member
+		( mem_id, mem_pass, mem_name
+		, mem_sb, mem_bir, mem_tel, 
+		mem_email, mem_mileage, mem_del_yn
+		) VALUES (
+		#{memId} , #{memPass} , #{memName}
+		, #{memSb} ,#{memBir} , #{memTel} 
+		, #{memEmail} , 0 , 'N'
+		)
+	</insert>
+
+	<update id="updateMember"
+		parameterType="com.proj.member.vo.MemberVO">
+		UPDATE member
+		SET mem_name = #{memName}
+		, mem_bir = #{memBir}
+		, mem_sb = #{memSb}
+		, mem_tel = #{memTel}
+		, mem_email = #{memEmail}
+		WHERE
+		mem_id = #{memId}
+		AND mem_pass = #{memPass}
+	</update>
+
+	<update id="deleteMember"
+		parameterType="com.proj.member.vo.MemberSearchVO">
+		UPDATE member
+		SET mem_del_yn = 'Y'
+		WHERE 1 = 1
+		AND mem_id in			
+		<foreach collection="memIds" item="id" open=" (" separator=", " close=")">
+			#{id}
+		</foreach>
+	</update>
+
+
+</mapper>

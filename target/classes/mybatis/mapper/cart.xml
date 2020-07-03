@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.proj.cart.dao.ICartDao">
+
+	<resultMap type="com.proj.common.vo.AreaVO" id="map4areaList">
+		<result column="area_code" property="areaCode"/>
+		<result column="area_name" property="areaName"/>
+	</resultMap>
+
+
+<!-- getAreaCode -->
+	<select id="getAreaCode" resultMap="map4areaList" parameterType="String" >
+		   SELECT area_code, area_name 
+		     FROM area 
+		    WHERE EXISTS ( SELECT area_code    
+		   				     FROM mem_cart 
+							WHERE mem_id = #{memId} 
+					          AND area.area_code = mem_cart.area_code
+		                  ) 
+	</select>
+
+
+
+<!-- getCartCount -->
+
+	<select id="getCartCount" resultType="int" parameterType="map">
+		SELECT count(*)
+		  FROM mem_cart
+		 WHERE mem_id = #{memId}
+ 		 <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(areaCode)">
+			AND area_code = #{areaCode}
+		 </if> 
+		   
+	</select>
+
+
+
+	<resultMap type="com.proj.cart.vo.CartVO" id="map4cartList">
+		<result column="table_name" property="tableName" />
+		<result column="table_no" property="tableNo" />
+		<result column="name" property="name" />
+		<result column="addr" property="addr" />
+		<result column="image" property="image" />
+	</resultMap>
+
+<!-- getCartList -->
+	<select id="getCartList" resultMap="map4cartList" parameterType="map">
+		SELECT (SELECT table_name FROM table_info WHERE table_info.table_code = t.table_code) AS table_name
+		     , m.table_no AS table_no 
+		     , t.name AS name
+		     , m.area_code 
+		     , t.add1 AS addr
+		     , t.image_url AS image
+		  FROM mem_cart m
+		     , stay t
+		 WHERE m.table_no = t.no
+		   AND m.mem_id =#{memId}
+		   and m.table_code = 'st'
+	   	<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(areaCode)">
+			AND t.area_code = #{areaCode}
+		</if>   
+		UNION
+		SELECT (SELECT table_name FROM table_info WHERE table_info.table_code = t.table_code) AS table_name
+		     , m.table_no AS table_no 
+		     , t.name AS name
+		     , m.area_code 
+		     , t.add1 AS addr
+		     , t.image_url AS image
+		  FROM mem_cart m
+		     , food t
+		 WHERE m.table_no = t.no
+		   AND m.mem_id =#{memId}
+		   and m.table_code = 'fo'
+	  	<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(areaCode)">
+			AND t.area_code = #{areaCode}
+		</if> 
+		UNION
+		SELECT (SELECT table_name FROM table_info WHERE table_info.table_code = t.table_code) AS table_name
+		     , m.table_no AS table_no 
+		     , t.name AS name
+		     , m.area_code 
+		     , t.add1 AS addr
+		     , t.image_url AS image
+		  FROM mem_cart m
+		     , festival t
+		 WHERE m.table_no = t.no
+		   AND m.mem_id =#{memId}
+		   and m.table_code = 'fe'
+	    <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(areaCode)">
+			AND t.area_code = #{areaCode}
+		</if> 
+		UNION
+		SELECT (SELECT table_name FROM table_info WHERE table_info.table_code = t.table_code) AS table_name
+		     , m.table_no AS table_no 
+		     , t.name AS name
+		     , m.area_code 
+		     , t.add1 AS addr
+		     , t.image_url AS image
+		  FROM mem_cart m
+		     , expr t
+		 WHERE m.table_no = t.no
+		   AND m.mem_id =#{memId}
+		   and m.table_code = 'ex'
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(areaCode)">
+			AND t.area_code = #{areaCode}
+		</if> 		  
+		UNION
+		SELECT (SELECT table_name FROM table_info WHERE table_info.table_code = t.table_code) AS table_name
+		     , m.table_no AS table_no 
+		     , t.name AS name
+		     , m.area_code 
+		     , t.add1 AS addr
+		     , t.image_url AS image
+		  FROM mem_cart m
+		     , place t
+		 WHERE m.table_no = t.no
+		   AND m.mem_id =#{memId}
+		   and m.table_code = 'pl'
+	  	<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(areaCode)">
+			AND t.area_code = #{areaCode}
+		</if> 
+		ORDER BY 1 ASC
+	</select>
+
+
+</mapper>
+ 
+ 
+ 

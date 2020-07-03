@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.proj.board.dao.IBoardDao">
+
+	
+	<resultMap id="map4boardList" type="com.proj.board.vo.BoardVO">
+	  <id column="bo_num" property="boNum"/>
+	  <result column="bo_id" property="boId"/>
+	  <result column="bo_title" property="boTitle"/>
+	  <result column="bo_area" property="boArea"/>
+	  <result column="bo_theme" property="boTheme"/>
+	  <result column="bo_content" property="boContent"/>
+	  <result column="bo_reg_date" property="boRegDate"/>
+	  <result column="bo_del_yn" property="boDelYn"/>
+	  <result column="bo_hit" property="boHit"/>
+	  <result column="bo_likes" property="boLikes"/>
+
+	
+	</resultMap>
+
+	<select id="getBoardCount" 
+	        resultType="int" 
+	        parameterType="com.proj.board.vo.BoardSearchVO" >
+			SELECT COUNT(*) as cnt     
+			  FROM board
+			 WHERE bo_del_yn = 'N'
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+			 	<choose>
+			 		<when test='searchType == "T"'>
+			 			AND bo_title like '%' || #{searchWord} || '%'
+			 		</when>
+			 		<when test='searchType == "ID"'>
+			 			AND bo_id like '%' || #{searchWord} || '%'
+			 		</when>
+			 		<when test='searchType == "A"'>
+			 			AND (select bo_nm from bo_info where board.bo_area = bo_info.bo_code) like '%' || #{searchWord} || '%'
+			 		</when>
+			 		<when test='searchType == "TH"'>
+			 			AND (select bo_nm from bo_info where board.bo_theme = bo_info.bo_code) like '%' || #{searchWord} || '%'
+			 		</when>
+			 	</choose>
+			 </if>
+			 	 
+			
+	</select>
+	
+	
+	<select id="getBoardList"
+		   parameterType="com.proj.board.vo.BoardSearchVO" 
+	       resultMap="map4boardList" >
+	       <include refid="common.PRE_PAGING_QRY" />
+			SELECT bo_num
+			     , bo_id
+			     , bo_title
+			     , bo_area
+			     , (select bo_nm from bo_info where board.bo_area = bo_info.bo_code) as bo_area_nm
+			     , bo_theme
+			     , (select bo_nm from bo_info where board.bo_theme = bo_info.bo_code) as bo_theme_nm
+			     , bo_content
+			     , bo_reg_date
+			     , bo_hit
+			     , bo_likes
+			  FROM board 
+			 WHERE bo_del_yn = 'N'
+			 <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+			 	<choose>
+			 		<when test='searchType == "T"'>
+			 			AND bo_title like '%' || #{searchWord} || '%'
+			 		</when>
+			 		<when test='searchType == "ID"'>
+			 			AND bo_id like '%' || #{searchWord} || '%'
+			 		</when>
+			 		<when test='searchType == "A"'>
+			 			AND (select bo_nm from bo_info where board.bo_area = bo_info.bo_code) like '%' || #{searchWord} || '%'
+			 		</when>
+			 		<when test='searchType == "TH"'>
+			 			AND (select bo_nm from bo_info where board.bo_theme = bo_info.bo_code) like '%' || #{searchWord} || '%'
+			 		</when>
+			 	</choose>
+			 </if>
+			 
+			 ORDER BY bo_num DESC
+			 <include refid="common.POST_PAGING_QRY" />
+			 
+	</select>
+	
+	<select id="getBoardListM"
+		   parameterType="com.proj.board.vo.BoardSearchVO" 
+	       resultMap="map4boardList" >
+	       <include refid="common.PRE_PAGING_QRY" />
+			SELECT bo_num
+			     , bo_id
+			     , bo_title
+			     , bo_area
+			     , (select bo_nm from bo_info where board.bo_area = bo_info.bo_code) as bo_area_nm
+			     , bo_theme
+			     , (select bo_nm from bo_info where board.bo_theme = bo_info.bo_code) as bo_theme_nm
+			     , bo_content
+			     , bo_reg_date
+			     , bo_hit
+			     , bo_likes
+			  FROM board 
+			 WHERE bo_del_yn = 'N'
+			 <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+			 	<choose>
+			 		<when test='searchType == "T"'>
+			 			AND bo_title like '%' || #{searchWord} || '%'
+			 		</when>
+			 		<when test='searchType == "ID"'>
+			 			AND bo_id like '%' || #{searchWord} || '%'
+			 		</when>
+			 		<when test='searchType == "A"'>
+			 			AND (select bo_nm from bo_info where board.bo_area = bo_info.bo_code) like '%' || #{searchWord} || '%'
+			 		</when>
+			 		<when test='searchType == "TH"'>
+			 			AND (select bo_nm from bo_info where board.bo_theme = bo_info.bo_code) like '%' || #{searchWord} || '%'
+			 		</when>
+			 	</choose>
+			 </if>
+			 
+			 ORDER BY bo_num DESC
+			 <include refid="common.POST_PAGING_QRY" /> 
+	</select>
+	
+
+	
+	<!-- 파라미터가 프리미티브형인 경우 이름은 의미없으니까 맘대로.. -->
+	<select id="getBoard" parameterType="int" resultType="com.proj.board.vo.BoardVO">
+			SELECT bo_num
+			      , bo_id 
+		          , bo_title 
+		          , bo_area
+				  , bo_theme
+				  , bo_content
+		          , TO_CHAR(bo_reg_date, 'YYYY-DD-MM HH24:MI') as bo_reg_date
+		          , bo_del_yn
+		          , bo_hit
+		          , bo_likes
+			 FROM board
+			WHERE bo_num = #{boNum}
+	
+	</select>
+	
+	
+		
+	<insert id="insertBoard" parameterType="com.proj.board.vo.BoardVO">
+	<selectKey keyProperty="boNum" resultType="int" order="BEFORE">
+		SELECT board_seq.nextval FROM dual
+	</selectKey>
+			  INSERT INTO board (
+				  	bo_num , bo_id, bo_title 
+				  , bo_area, bo_theme, bo_content
+                  , bo_reg_date , bo_del_yn , bo_hit
+				  , bo_likes
+			) VALUES (
+				    #{boNum}, #{boId}, #{boTitle}
+				  , #{boArea} , #{boTheme} , #{boContent}
+				  , SYSDATE , 'N', 0
+				  , 0
+			) 
+	</insert>
+	
+	
+	
+	<update id="updateBoard" parameterType="com.proj.board.vo.BoardVO">
+			UPDATE board
+			   SET bo_title = #{boTitle}
+<!-- 			     , bo_id    = #{boId} -->
+<!-- 			     , bo_area = #{boArea} -->
+<!-- 			     , bo_theme = #{boTheme} -->
+			     , bo_content  = #{boContent}
+			 WHERE bo_num = #{boNum}
+	</update>
+	
+	
+	<delete id="deleteBoard" parameterType="com.proj.board.vo.BoardVO">
+			UPDATE board
+			   SET bo_del_yn = 'Y'
+			 WHERE bo_num = #{boNum}
+	</delete>
+	
+	<delete id="deleteBoardM" parameterType="com.proj.board.vo.BoardSearchVO">
+			UPDATE board
+			   SET bo_del_yn = 'Y'
+			 WHERE 1 = 1 
+			 AND bo_num in
+			 <foreach collection="boNos" item="id" open=" (" separator=", " close=")">
+				#{id}
+			</foreach>
+	</delete>
+	
+	
+	<update id="increaseHit" parameterType="int">
+			UPDATE board
+			   SET bo_hit = bo_hit + 1
+			 WHERE bo_num = #{boNum}
+	</update>
+	
+	
+</mapper>  

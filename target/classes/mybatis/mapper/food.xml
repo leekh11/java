@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.proj.food.dao.IFoodDao">
+
+	<select id="getFoodCount" resultType="int"
+		parameterType="com.proj.common.vo.PagingVO">
+		SELECT COUNT(*) as cnt
+		FROM food
+	</select>
+
+	<select id="getFoodList"
+		parameterType="com.proj.common.vo.PagingVO"
+		resultType="com.proj.food.vo.FoodVO">
+		<include refid="common.PRE_PAGING_QRY" />
+		Select food.*
+	        , (select area_name from area where food.area_code = area_code) as area_nm
+		FROM food
+		ORDER BY no ASC
+		<include refid="common.POST_PAGING_QRY" />
+	</select>
+
+	<select id="getFood" parameterType="int"
+		resultType="com.proj.food.vo.FoodVO">
+		SELECT no
+		    , name
+		    , area_code
+		    , add1
+		    , add2
+		    , keyword
+		    , image_url
+		    , public_yn
+		    , tel
+		    , hit
+		    , likes
+		    , grade
+		    , table_code
+		    , mapx
+		    , mapy
+		FROM food
+		WHERE no = #{no}
+	</select>
+	
+	<insert id="InsertFood"
+		parameterType="com.proj.food.vo.FoodVO">
+		INSERT INTO food
+		(  	  no
+		    , name
+		    , area_code
+		    , add1
+		    , add2
+		    , keyword
+		    , image_url
+		    , public_yn
+		    , tel
+		    , hit
+		    , likes
+		    , grade
+		    , table_code
+		    , mapx
+		    , mapy
+		) VALUES (
+			FOOD_SEQ.nextval 
+			, #{name}
+		    , #{area_code}
+		    , #{add1}
+		    , #{add2}
+		    , #{keyword}
+		   	, #{image_url}
+		   	, 'N'
+		   	, #{tel}
+		    , 0
+		    , 0
+		    , 0
+		    , 'fo'
+		    , #{mapx}
+		    , #{mapy}	)
+	</insert>
+
+	<update id="updateFood"
+		parameterType="com.proj.food.vo.FoodVO">
+		UPDATE food
+		SET name = #{name}
+		, add1 = #{add1}
+		, add2 = #{add2}
+		, keyword = #{keyword}
+		, image_url = #{imageUrl}
+		, mapx = #{mapx}
+		, mapy = #{mapy}
+		WHERE no = #{no}
+	</update>
+
+	<update id="deleteFood"
+		parameterType="com.proj.food.vo.FoodVO">
+		Delete food
+		WHERE no = #{no}
+	</update>
+
+
+</mapper>

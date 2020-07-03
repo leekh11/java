@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+
+	<!-- context-transaction.xml -->
+	<!-- 트랜잭션 매니저 빈 등록 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- 
+		read-only : 읽기 전용 설정 
+					  true인 경우 DML(insert,update,delete)이 발생하면 오류가 날 수도 있음
+		rollback-for : 기본적으로 RuntimeException 만 롤백을 합니다.
+						   만약 checked exception 중에서 롤백을 하고 싶으면 기술 			  
+		
+    -->
+
+	
+	<!-- tx:advice를 통해서 각 메소드의 룰 설정 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true"/>
+			<tx:method name="select*" read-only="true"/>
+			<tx:method name="*" rollback-for="Exception"/>
+			<!-- 
+				<tx:method name="regist*" rollback-for="Exception"/>
+				<tx:method name="modify*" rollback-for="Exception"/>
+			 -->
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- aop:pointcut을 사용하여 메소드 캐치 -->
+	<aop:config>
+		<aop:pointcut id="com.proj.cart.servicePointcut" expression="execution(public * com.proj..service.*Impl.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="com.proj.cart.servicePointcut"/>
+	</aop:config>
+	
+
+</beans>

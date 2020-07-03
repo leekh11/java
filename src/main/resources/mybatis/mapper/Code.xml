@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.proj.code.dao.ICommonCodeDao">
+
+	<cache />
+	<select id="getCodeListByParent" parameterType="String"
+		resultType="com.proj.code.vo.CodeVO">
+		SELECT bo_code
+		, bo_nm
+		, bo_pa
+		FROM bo_info
+		WHERE bo_pa = #{code}
+		ORDER BY bo_code ASC
+	</select>
+</mapper>

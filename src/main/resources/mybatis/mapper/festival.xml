@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.proj.festival.dao.IFestivalDao">
+
+	<select id="getFestivalCount" resultType="int"
+		parameterType="com.proj.common.vo.PagingVO">
+		SELECT COUNT(*) as cnt
+		FROM festival
+	</select>
+
+	<select id="getFestivalList"
+		parameterType="com.proj.common.vo.PagingVO"
+		resultType="com.proj.festival.vo.FestivalVO">
+		<include refid="common.PRE_PAGING_QRY" />
+		Select festival.*
+		      , (select area_name from area where festival.area_code = area_code) as area_nm
+		FROM festival
+		ORDER BY no ASC
+		<include refid="common.POST_PAGING_QRY" />
+	</select>
+
+	<select id="getFestival" parameterType="int"
+		resultType="com.proj.festival.vo.FestivalVO">
+		SELECT no
+		    , name
+		    , area_code
+		    , add1
+		    , add2
+		    , keyword
+		    , image_url
+		    , public_yn
+		    , st_date
+		    , end_date
+		    , hit
+		    , likes
+		    , grade
+		    , table_code
+		    , mapx
+		    , mapy
+		FROM festival
+		WHERE no = #{no}
+	</select>
+	
+	<insert id="InsertFestival"
+		parameterType="com.proj.festival.vo.FestivalVO">
+		INSERT INTO festival
+		(     no
+		    , name
+		    , area_code
+		    , add1
+		    , add2
+		    , keyword
+		    , image_url
+		    , public_yn
+		    , st_date
+		    , end_date
+		    , hit
+		    , likes
+		    , grade
+		    , table_code
+		    , mapx
+		    , mapy
+		) VALUES (
+			FESTIVAL_SEQ.nextval 
+			, #{name}
+		    , #{area_code}
+		    , #{add1}
+		    , #{add2}
+		    , #{keyword}
+		   	, #{image_url}
+		   	, 'N'
+		   	, #{st_date}
+		   	, #{end_date}
+		    , 0
+		    , 0
+		    , 0
+		    , 'fe'
+		    , #{mapx}
+		    , #{mapy}	)
+	</insert>
+
+	<update id="updateFestival"
+		parameterType="com.proj.festival.vo.FestivalVO">
+		UPDATE festival
+		SET name = #{name}
+		, add1 = #{add1}
+		, add2 = #{add2}
+		, keyword = #{keyword}
+		, image_url = #{imageUrl}
+		, mapx = #{mapx}
+		, mapy = #{mapy}
+		WHERE no = #{no}
+	</update>
+
+	<update id="deleteFestival"
+		parameterType="com.proj.festival.vo.FestivalVO">
+		Delete festival
+		WHERE no = #{no}
+	</update>
+
+
+</mapper>

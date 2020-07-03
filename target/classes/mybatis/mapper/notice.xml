@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.proj.notice.dao.INoticeDao">
+
+	<select id="getNoticeCount" resultType="int"
+		parameterType="com.proj.common.vo.PagingVO">
+		SELECT COUNT(*) as cnt
+		FROM notice
+		WHERE notice_del_yn = 'N'
+	</select>
+
+	<select id="getNoticeList"
+		parameterType="com.proj.common.vo.PagingVO"
+		resultType="com.proj.notice.vo.NoticeVO">
+		<include refid="common.PRE_PAGING_QRY" />
+		Select *
+		FROM notice
+		WHERE notice_del_yn = 'N'
+		ORDER BY notice_no ASC
+		<include refid="common.POST_PAGING_QRY" />
+	</select>
+
+	<select id="getNotice" parameterType="int"
+		resultType="com.proj.notice.vo.NoticeVO">
+		SELECT notice_no
+			    , notice_id
+			    , notice_title
+			    , notice_content
+			    , notice_content
+			    , notice_reg_date
+		FROM notice
+		WHERE notice_no = #{no}
+	</select>
+	
+	<insert id="InsertNotice"
+		parameterType="com.proj.notice.vo.NoticeVO">
+		INSERT INTO notice
+		( notice_no, notice_id, notice_title
+		, notice_content ,notice_del_yn , NOTICE_REG_DATE 
+		) VALUES (
+		NOTICE_SEQ.nextval , #{noticeId} , #{noticeTitle}
+		, #{noticeContent} , 'N' , sysdate	)
+	</insert>
+
+	<update id="updateNotice"
+		parameterType="com.proj.notice.vo.NoticeVO">
+		UPDATE notice
+		SET notice_id = #{noticeId}
+		, notice_title = #{noticeTitle}
+		, notice_content = #{noticeContent}
+		, NOTICE_REG_DATE = SYSDATE
+		WHERE notice_no = #{noticeNo}
+	</update>
+
+	<update id="deleteNotice"
+		parameterType="com.proj.notice.vo.NoticeVO">
+		UPDATE notice
+		SET notice_del_yn = 'Y'
+		WHERE notice_no = #{noticeNo}
+	</update>
+
+
+</mapper>

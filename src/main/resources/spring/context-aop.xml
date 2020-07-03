@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<!-- 작성한 advice com.proj.aop.LoggerAdvice -->
+	<bean id="logger" class="com.proj.aop.LoggerAdvice" />
+	
+	<aop:config>
+		<!-- 현재 com.proj. 모든 서비스의 public 메소드 포인트 
+			   execution([접근제어자] * [팩키지&클래스] *(..))
+		-->
+		<aop:pointcut expression="execution(public * com.proj..service.*Impl.*(..))" id="com.proj.cart.servicePointcut"/>
+		<aop:aspect ref="logger">
+			<aop:before method="logging" pointcut-ref="com.proj.cart.servicePointcut"/>
+		</aop:aspect>
+	</aop:config>
+
+</beans>

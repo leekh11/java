@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.proj.expr.dao.IExprDao">
+
+	<select id="getExprCount" resultType="int"
+		parameterType="com.proj.common.vo.PagingVO">
+		SELECT COUNT(*) as cnt
+		FROM expr
+	</select>
+	
+	<select id="getExprMaxCount" resultType="int">
+		SELECT COUNT(*) as cnt
+		FROM expr
+	</select>
+
+	<select id="getExprList"
+		parameterType="com.proj.common.vo.PagingVO"
+		resultType="com.proj.expr.vo.ExprVO">
+		<include refid="common.PRE_PAGING_QRY" />
+		Select expr.*
+		      , (select area_name from area where expr.area_code = area_code) as area_nm
+		FROM expr
+		ORDER BY no ASC
+		<include refid="common.POST_PAGING_QRY" />
+	</select>
+
+	<select id="getExpr" parameterType="int"
+		resultType="com.proj.expr.vo.ExprVO">
+		SELECT     no
+			    , name
+			    , area_code
+			    , add1
+			    , add2
+			    , keyword
+			    , content
+			    , hit
+			    , likes
+			    , grade
+			    , image_url
+			    , public_yn
+			    , table_code
+			    , mapx
+			    , mapy
+		FROM expr
+		WHERE no = #{no}
+	</select>
+	
+	<insert id="InsertExpr"
+		parameterType="com.proj.expr.vo.ExprVO">
+		INSERT INTO expr
+		(     no
+		    , name
+		    , area_code
+		    , add1
+		    , add2
+		    , keyword
+		    , content
+		    , hit
+		    , likes
+		    , grade
+		    , image_url
+		    , public_yn
+		    , table_code
+		    , mapx
+		    , mapy
+		) VALUES (
+			EXPR_SEQ.nextval 
+			, #{name}
+		    , #{area_code}
+		    , #{add1}
+		    , #{add2}
+		    , #{keyword}
+		    , #{content}
+		    , 0
+		    , 0
+		    , 0
+		    , #{image_url}
+		    , 'N'
+		    , 'ex'
+		    , #{mapx}
+		    , #{mapy}	)
+	</insert>
+
+	<update id="updateExpr"
+		parameterType="com.proj.expr.vo.ExprVO">
+		UPDATE expr
+		SET name = #{name}
+		, add1 = #{add1}
+		, add2 = #{add2}
+		, keyword = #{keyword}
+		, content = #{content}
+		, image_url = #{imageUrl}
+		, mapx = #{mapx}
+		, mapy = #{mapy}
+		WHERE no = #{no}
+	</update>
+
+	<update id="deleteExpr"
+		parameterType="com.proj.expr.vo.ExprVO">
+		Delete expr
+		WHERE no = #{no}
+	</update>
+
+
+</mapper>
